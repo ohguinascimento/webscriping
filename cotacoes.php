@@ -1,46 +1,23 @@
 <?php
-include "helper.php";
+require_once __DIR__ . '/helper.php';
 
-/* Cotação dolar */
-$real = webscript("https://br.investing.com/currencies/usd-brl", './/span[@data-test="instrument-price-last"]');
-$real = str_replace(",", ".", $real);
-$real = (float)$real;
+$dolar = getCotacao('USD');
+$euro = getCotacao('EUR');
+$bitcoin = getCotacao('BTC');
+$ethereum = getCotacao('ETH');
+$solana = getCotacao('SOL');
+$magalu = getCotacao('MGLU3');
+$petrobras = getCotacao('PETR4');
+$vale = getCotacao('VALE3');
 
-echo "<h1> Cotação do Dolar é R$ " . number_format($real, 2, ',', '.') . "</h1>" . PHP_EOL;
+echo "<h1>📊 Painel de Cotações em Tempo Real</h1>" . PHP_EOL;
+if ($dolar !== null) echo "<h2>Cotação do Dólar: " . formatarPreco($dolar) . "</h2>" . PHP_EOL;
+if ($euro !== null) echo "<h2>Cotação do Euro: " . formatarPreco($euro) . "</h2>" . PHP_EOL;
+if ($bitcoin !== null) echo "<h2>Cotação do Bitcoin: " . formatarPreco($bitcoin) . "</h2>" . PHP_EOL;
+if ($ethereum !== null) echo "<h2>Cotação do Ethereum: " . formatarPreco($ethereum) . "</h2>" . PHP_EOL;
+if ($solana !== null) echo "<h2>Cotação do Solana: " . formatarPreco($solana) . "</h2>" . PHP_EOL;
+if ($magalu !== null) echo "<h2>Cotação da Magazine Luiza (MGLU3): " . formatarPreco($magalu) . "</h2>" . PHP_EOL;
+if ($petrobras !== null) echo "<h2>Cotação da Petrobras (PETR4): " . formatarPreco($petrobras) . "</h2>" . PHP_EOL;
+if ($vale !== null) echo "<h2>Cotação da Vale (VALE3): " . formatarPreco($vale) . "</h2>" . PHP_EOL;
 
-/* Cotação Bitcoin */
-$btc = "https://www.infomoney.com.br/cotacoes/bitcoin-btc/";
-$bitcoin = webscript($btc, './/div[@class="value"]');
-$array = (explode(" ", $bitcoin));
-
-$ponto = str_replace('.', '', $array[36]);
-$virgula = str_replace(',', '.', $ponto);
-$cotacao = str_replace('.', ',', $ponto);
-$cotacao = (float)$cotacao;
-$cotacao = number_format($cotacao, 2, ',', '.');
-
-echo "<h1> Cotação do Bitcoin é R$ " . $cotacao . "</h1>" . PHP_EOL;
-
-/* Cotação Ethereum */
-$eth = "https://www.infomoney.com.br/cotacoes/ethereum-eth/";
-$ethereum = webscript($eth, './/div[@class="value"]');
-$array = (explode(" ", $ethereum));
-
-$ponto = str_replace('.', '', $array[36]);
-$virgula = str_replace(',', '.', $ponto);
-$cotacao = str_replace('.', ',', $ponto);
-$cotacao = (float)$cotacao;
-$cotacao = number_format($cotacao, 2, ',', '.');
-echo "<h1>Cotação do Ethereum é R$ " . $cotacao . "</h1>"  . PHP_EOL;
-
-/* Minha carteira */
-
-$carteira = "https://polygonscan.com/address/0x9210e2054bf32b19d275d139e2cb9dcb467ec434";
-$poligon = webscript($carteira, './/div[@id="ContentPlaceHolder1_divSummary"]//div[@class="card-body"]//div[@id="ContentPlaceHolder1_tokenbalance"]//a[@id="availableBalanceDropdown"]');
-
-$array = str_replace("1", "", $poligon);
-$dolar = str_replace("$", "", $array);
-$dolar = (float)$dolar;
-$dolar = $dolar * $real;
-$dolar = number_format($dolar, 2, ',', '.');
-echo "<h1>Cotação minha carteira  R$ " . $dolar . " </h1>" . PHP_EOL;
+echo "<hr><p><a href='index.php'>Acessar Dashboard Histórico e Gráficos</a></p>" . PHP_EOL;

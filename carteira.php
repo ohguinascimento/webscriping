@@ -1,29 +1,50 @@
 <?php
-include "helper.php";
+require_once __DIR__ . '/helper.php';
 
-/* Cotação dolar */
-$real = webscript("https://br.investing.com/currencies/usd-brl", './/span[@data-test="instrument-price-last"]');
-$real = str_replace(",", ".", $real);
-$real = (float)$real;
+$pdo = App\Database::getConnection();
+$collector = new App\PriceCollector();
 
-/* Rede Poligon */
-$carteira = "https://polygonscan.com/address/0x9210e2054bf32b19d275d139e2cb9dcb467ec434";
-$poligon = webscript($carteira, './/div[@id="ContentPlaceHolder1_divSummary"]//div[@class="card-body"]//div[@id="ContentPlaceHolder1_tokenbalance"]//a[@id="availableBalanceDropdown"]');
+// Get ETH & USD
+$real = getCotacao('USD') ?? 1.0;
+$ethPrice = getCotacao('ETH') ?? 0;
 
-/* Cotação Ethereum */
-$eth = "https://www.infomoney.com.br/cotacoes/ethereum-eth/";
-$ethereum = webscript($eth, './/div[@class="value"]');
-$array = (explode(" ", $ethereum));
+// Query holdings from database
+$sql = "
+    SELECT 
+        w.id,
+        w.wallet_name,
+        w.amount,
+        w.notes,
+        a.symbol,
+        a.name,
+        ph.price as current_price,
+        (w.amount * ph.price) as current_total_brl
+    FROM wallet_holdings w
+    JOIN assets a ON a.id = w.asset_id
+    LEFT JOIN price_history ph ON ph.id = (
+        SELECT id FROM price_history 
+        WHERE asset_id = a.id 
+        ORDER BY recorded_at DESC, id DESC 
+        LIMIT 1
+    )
+";
+$holdings = $pdo->query($sql)->fetchAll();
+$totalGeral = 0;
 
-$ponto = str_replace('.', '', $array[36]);
-$virgula = str_replace(',', '.', $ponto);
-$cotacao = str_replace('.', ',', $ponto);
-echo "<h1>Cotação do Ethereum é R$ " . $cotacao . "</h1>"  . PHP_EOL;
+echo "<h1>💼 Relatório de Carteira de Criptoativos & Investimentos</h1>" . PHP_EOL;
+echo "<p>Dólar Base: " . formatarPreco($real) . " | ETH Atual: " . formatarPreco($ethPrice) . "</p>" . PHP_EOL;
 
-/* Rede extrair poligon */
-$array = str_replace("1", "", $poligon);
-$dolar = str_replace("$", "", $array);
-$dolar = (float)$dolar;
-$dolar = $dolar * $real;
-$dolar = number_format($dolar, 2, ',', ' ');
-echo "<h1>Sua Carteira tem  R$ " . $dolar . " </h1>" . PHP_EOL;
+if (empty($holdings)) {
+    echo "<p>Nenhuma posição cadastrada na carteira.</p>";
+} else {
+    echo "<ul>";
+    foreach ($holdings as $pos) {
+        $subtotal = (float)$pos['current_total_brl'];
+        $totalGeral += $subtotal;
+        echo "<li><strong>{$pos['wallet_name']}</strong>: {$pos['amount']} {$pos['symbol']} (" . formatarPreco($pos['current_price']) . " cada) = <strong>" . formatarPreco($subtotal) . "</strong></li>";
+    }
+    echo "</ul>";
+}
+
+echo "<h2>Saldo Total Estimado: " . formatarPreco($totalGeral) . "</h2>" . PHP_EOL;
+echo "<hr><p><a href='index.php'>Voltar ao Painel Histórico</a></p>";

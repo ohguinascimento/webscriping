@@ -1,12 +1,10 @@
 <?php
-include "helper.php";
+require_once __DIR__ . '/helper.php';
 
-$btc = "https://www.infomoney.com.br/cotacoes/bitcoin-btc/";
-$bitcoin = webscript($btc, './/div[@class="value"]');
-$array = (explode(" ", $bitcoin));
+$bitcoin = getCotacao('BTC');
 
-$ponto = str_replace('.', '', $array[36]);
-$virgula = str_replace(',', '.', $ponto);
-$cotacao = str_replace('.', ',', $ponto);
-
-echo "<h1> Cotação do Bitcoin é R$ " . $cotacao . "</h1>" . PHP_EOL;
+if ($bitcoin !== null) {
+    echo "<h1>Cotação do Bitcoin é " . formatarPreco($bitcoin, 2) . "</h1>" . PHP_EOL;
+} else {
+    echo "<h1>Não foi possível obter a cotação do Bitcoin</h1>" . PHP_EOL;
+}

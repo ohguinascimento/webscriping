@@ -1,0 +1,16 @@
+[Mon 10/26/2026 23:20:49.83] Executando coletor de precos... 
+====================================================
+   📊 COLETOR DE PREÇOS HISTÓRICOS - 2026-10-27 03:20:49
+====================================================
+ [✓] USD     | Dólar Americano     | R$         5,37 | Var:   +8,19%
+ [✓] EUR     | Euro                 | R$         6,00 | Var:   +6,88%
+ [✓] BTC     | Bitcoin              | R$   430.530,00 | Var:   +0,46%
+ [✓] ETH     | Ethereum             | R$    12.485,69 | Var:   +0,29%
+ [✓] SOL     | Solana               | R$       540,90 | Var:   -0,42%
+ [✓] MGLU3   | Magazine Luiza ON    | R$         5,30 | Var:  -58,23%
+ [✓] PETR4   | Petrobras PN         | R$        53,88 | Var:   -8,18%
+ [✓] VALE3   | Vale ON              | R$        64,38 | Var:   +4,01%
+----------------------------------------------------
+ Sucesso: 8 | Falhas: 0 | Total gravado no banco de dados.
+====================================================
+[Mon 10/26/2026 23:20:50.65] Ciclo concluido. 

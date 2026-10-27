@@ -1,9 +1,10 @@
 <?php
-include "helper.php";
+require_once __DIR__ . '/helper.php';
 
-/* Cotação dolar */
-$real = webscript("https://br.investing.com/currencies/usd-brl", './/span[@data-test="instrument-price-last"]');
-$real = str_replace(",", ".", $real);
-$real = (float)$real;
+$dolar = getCotacao('USD');
 
-echo "<h1> Cotação do dolar é R$ " . number_format($real, 2, ',', ' ') . "</h1>" . PHP_EOL;
+if ($dolar !== null) {
+    echo "<h1>Cotação do Dólar é " . formatarPreco($dolar, 2) . "</h1>" . PHP_EOL;
+} else {
+    echo "<h1>Não foi possível obter a cotação do Dólar</h1>" . PHP_EOL;
+}

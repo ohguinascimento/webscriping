@@ -1,37 +1,46 @@
 <?php
-include "helper.php";
-/* Cotação Ethereum */
-$eth = "https://www.infomoney.com.br/cotacoes/ethereum-eth/";
-$ethereum = webscript($eth, './/div[@class="value"]');
-$array = (explode(" ", $ethereum));
+require_once __DIR__ . '/helper.php';
 
-$ponto = str_replace('.', '', $array[36]);
-$virgula = str_replace(',', '.', $ponto);
-$cotacao = str_replace('.', ',', $ponto);
-echo "<h1>Cotação do Ethereum é R$ " . $cotacao . "</h1>"  . PHP_EOL;
+$cotacao = getCotacao('ETH') ?? 0;
+$cotacaoFmt = formatarPreco($cotacao, 2);
 
-echo "<h2> Quantos Ethereum você tem ? </h2>";
-
-echo "<input type='text' name='eth' > ";
-echo "<input type='hidden' name='cotacao' value='{$cotacao}' > ";
-echo "<p class=resultado> Resultado </p>";
+echo "<h1>Cotação do Ethereum é " . $cotacaoFmt . "</h1>" . PHP_EOL;
 ?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora Ethereum</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px; background: #0f172a; color: #f8fafc; }
+        .card { background: #1e293b; padding: 24px; border-radius: 12px; max-width: 450px; border: 1px solid #334155; }
+        input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 16px; margin: 10px 0; box-sizing: border-box; }
+        .resultado { font-size: 20px; font-weight: bold; color: #38bdf8; margin-top: 15px; }
+        a { color: #38bdf8; text-decoration: none; display: inline-block; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Quantos Ethereum você tem?</h2>
+        <input type="number" step="any" name="eth" placeholder="Ex: 0.5" autofocus>
+        <input type="hidden" name="cotacao" value="<?= htmlspecialchars((string)$cotacao) ?>">
+        <div class="resultado">Total: R$ 0,00</div>
+        <a href="index.php">← Ir para o Dashboard Completo</a>
+    </div>
 
-<script>
-    var eth = document.querySelector("input[name=eth]");
-    var cotacao = document.querySelector("input[name=cotacao]");
-    var campoResultado = document.querySelector(".resultado");
+    <script>
+        const ethInput = document.querySelector("input[name=eth]");
+        const cotacaoVal = parseFloat(document.querySelector("input[name=cotacao]").value) || 0;
+        const resultadoDiv = document.querySelector(".resultado");
 
-    function calcular(eth, cotacao) {
-        var valor1 = parseFloat(eth.value) || 0;
-        var valor2 = parseFloat(cotacao.value) || 0;
-        return valor1 * valor2;
-    }
+        function calcular() {
+            const qtd = parseFloat(ethInput.value) || 0;
+            const total = qtd * cotacaoVal;
+            resultadoDiv.innerHTML = "Total: " + total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
 
-    function evtCalcular() {
-        var resultado = calcular(eth, cotacao);
-
-        campoResultado.innerHTML = resultado;
-    }
-    eth.addEventListener('blur', evtCalcular);
-</script>
+        ethInput.addEventListener('input', calcular);
+        ethInput.addEventListener('keyup', calcular);
+    </script>
+</body>
+</html>

@@ -1,12 +1,10 @@
 <?php
-include "helper.php";
+require_once __DIR__ . '/helper.php';
 
-$mglu = "https://www.infomoney.com.br/cotacoes/magazine-luiza-mglu3";
-$magalu = webscript($mglu, './/div[@class="value"]');
-$array = (explode(" ", $magalu));
+$magalu = getCotacao('MGLU3');
 
-$ponto = str_replace('.', '', $array[36]);
-$virgula = str_replace(',', '.', $ponto);
-$cotacao = str_replace('.', ',', $ponto);
-
-echo "<h1> a cotação de magalu é R$ " . $cotacao . "</h1>" . PHP_EOL;
+if ($magalu !== null) {
+    echo "<h1>A cotação de Magazine Luiza (MGLU3) é " . formatarPreco($magalu, 2) . "</h1>" . PHP_EOL;
+} else {
+    echo "<h1>Não foi possível obter a cotação de Magazine Luiza</h1>" . PHP_EOL;
+}
